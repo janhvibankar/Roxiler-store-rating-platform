@@ -34,6 +34,21 @@ class StoreService {
   }
 
   async getStoresForUser(filters = {}) {
+    const allowedSortBy = ['name', 'address', 'overallRating'];
+    const allowedSortOrder = ['asc', 'desc', 'ASC', 'DESC'];
+
+    if (filters.sortBy && !allowedSortBy.includes(filters.sortBy)) {
+      const err = new Error(`Invalid sortBy parameter '${filters.sortBy}'. Allowed values are: ${allowedSortBy.join(', ')}.`);
+      err.statusCode = 400;
+      throw err;
+    }
+
+    if (filters.sortOrder && !allowedSortOrder.includes(filters.sortOrder)) {
+      const err = new Error(`Invalid sortOrder parameter '${filters.sortOrder}'. Allowed values are 'asc' or 'desc'.`);
+      err.statusCode = 400;
+      throw err;
+    }
+
     return storeRepository.getStoresForUser(filters);
   }
 }

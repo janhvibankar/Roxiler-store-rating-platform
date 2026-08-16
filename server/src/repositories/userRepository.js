@@ -89,7 +89,18 @@ class UserRepository {
       params.push(filters.role);
     }
 
-    sql += ` ORDER BY id ASC`;
+    const USER_SORT_MAP = {
+      name: 'name',
+      email: 'email',
+      address: 'address',
+      role: 'role',
+      createdAt: 'created_at',
+    };
+
+    const sortCol = USER_SORT_MAP[filters.sortBy] || 'id';
+    const sortDir = (filters.sortOrder || '').toLowerCase() === 'desc' ? 'DESC' : 'ASC';
+
+    sql += ` ORDER BY ${sortCol} ${sortDir}`;
     return db.query(sql, params);
   }
 

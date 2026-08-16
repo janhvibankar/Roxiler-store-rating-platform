@@ -3,6 +3,7 @@ import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import RatingInput from '../components/RatingInput';
 import Button from '../components/Button';
+import Table from '../components/Table';
 import storeService from '../services/storeService';
 import ratingService from '../services/ratingService';
 import tokenStorage from '../utils/tokenStorage';
@@ -11,6 +12,8 @@ export const UserStoreListPage = () => {
   const [stores, setStores] = useState([]);
   const [nameFilter, setNameFilter] = useState('');
   const [addressFilter, setAddressFilter] = useState('');
+  const [sortBy, setSortBy] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -23,12 +26,18 @@ export const UserStoreListPage = () => {
 
   useEffect(() => {
     fetchStores();
-  }, []);
+  }, [sortBy, sortOrder]);
 
-  const fetchStores = async (params = {}) => {
+  const fetchStores = async (extraParams = {}) => {
     setLoading(true);
     setError(null);
     try {
+      const params = { ...extraParams };
+      if (nameFilter.trim()) params.name = nameFilter.trim();
+      if (addressFilter.trim()) params.address = addressFilter.trim();
+      if (sortBy) params.sortBy = sortBy;
+      if (sortOrder) params.sortOrder = sortOrder;
+
       const response = await storeService.getAllStores(params);
       const storeData = response.data || [];
       setStores(storeData);
@@ -49,16 +58,24 @@ export const UserStoreListPage = () => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    const params = {};
-    if (nameFilter.trim()) params.name = nameFilter.trim();
-    if (addressFilter.trim()) params.address = addressFilter.trim();
-    fetchStores(params);
+    fetchStores();
   };
 
   const handleClearSearch = () => {
     setNameFilter('');
     setAddressFilter('');
-    fetchStores();
+    setSortBy('');
+    setSortOrder('asc');
+    fetchStores({ name: undefined, address: undefined, sortBy: undefined, sortOrder: undefined });
+  };
+
+  const handleSort = (key) => {
+    if (sortBy === key) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(key);
+      setSortOrder('asc');
+    }
   };
 
   const handleRateSubmit = async (storeId, newRatingValue) => {
@@ -86,7 +103,7 @@ export const UserStoreListPage = () => {
       }
 
       setRatingInputState((prev) => ({ ...prev, [storeId]: newRatingValue }));
-      fetchStores({ name: nameFilter.trim() || undefined, address: addressFilter.trim() || undefined });
+      fetchStores();
     } catch (err) {
       setActionMessageMap((prev) => ({
         ...prev,
@@ -104,6 +121,85 @@ export const UserStoreListPage = () => {
     const emptyStars = '☆'.repeat(5 - num);
     return `${fullStars}${emptyStars} (${ratingVal})`;
   };
+
+  const columns = [
+    {
+      header: 'Store Name',
+      key: 'name',
+      sortable: true,
+      render: (val, row) => (
+        <span style={{ fontWeight: 600, color: '#0f172a' }}>{row.name}</span>
+      ),
+    },
+    {
+      header: 'Address',
+      key: 'address',
+      sortable: true,
+      render: (val, row) => (
+        <span style={{ color: '#334155' }}>{row.address}</span>
+      ),
+    },
+    {
+      header: 'Overall Rating',
+      key: 'overallRating',
+      sortable: true,
+      render: (val, row) =>
+        row.overallRating !== null && row.overallRating !== undefined ? (
+          <span style={{ color: '#d97706', fontWeight: 600 }}>{renderStars(row.overallRating)}</span>
+        ) : (
+          <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>No ratings</span>
+        ),
+    },
+    {
+      header: 'My Rating',
+      key: 'userRating',
+      render: (val, row) =>
+        row.userRating ? (
+          <span style={{ color: '#059669', fontWeight: 600 }}>
+            {'★'.repeat(row.userRating)} ({row.userRating}/5)
+          </span>
+        ) : (
+          <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Not rated</span>
+        ),
+    },
+    {
+      header: 'Action',
+      key: 'action',
+      render: (val, row) => {
+        const currentStoreRating = ratingInputState[row.id] || row.userRating || 0;
+        const isSubmitting = submittingMap[row.id];
+        const actionMsg = actionMessageMap[row.id];
+
+        if (!isUserRole) {
+          return currentUser ? (
+            <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Only Normal Users can rate</span>
+          ) : (
+            <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Log in as Normal User to rate</span>
+          );
+        }
+
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+            <RatingInput
+              value={currentStoreRating}
+              disabled={isSubmitting}
+              onChange={(val) => handleRateSubmit(row.id, val)}
+            />
+            {actionMsg && (
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  color: actionMsg.type === 'error' ? '#dc2626' : '#059669',
+                }}
+              >
+                {actionMsg.text}
+              </span>
+            )}
+          </div>
+        );
+      },
+    },
+  ];
 
   return (
     <div className="page-container">
@@ -159,7 +255,7 @@ export const UserStoreListPage = () => {
             <Button type="submit" variant="primary" size="md">
               Search
             </Button>
-            {(nameFilter || addressFilter) && (
+            {(nameFilter || addressFilter || sortBy) && (
               <Button type="button" variant="secondary" size="md" onClick={handleClearSearch}>
                 Clear
               </Button>
@@ -178,84 +274,14 @@ export const UserStoreListPage = () => {
           <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '0.25rem' }}>Try modifying your search criteria.</p>
         </div>
       ) : (
-        <div style={{ overflowX: 'auto', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#ffffff' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
-            <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>
-                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Store Name</th>
-                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Address</th>
-                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Rating</th>
-                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>My Rating</th>
-                <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stores.map((store) => {
-                const currentStoreRating = ratingInputState[store.id] || store.userRating || 0;
-                const isSubmitting = submittingMap[store.id];
-                const actionMsg = actionMessageMap[store.id];
-
-                return (
-                  <tr key={store.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '0.75rem 1rem', fontWeight: 600, color: '#0f172a' }}>
-                      {store.name}
-                    </td>
-
-                    <td style={{ padding: '0.75rem 1rem', color: '#334155' }}>
-                      {store.address}
-                    </td>
-
-                    <td style={{ padding: '0.75rem 1rem' }}>
-                      {store.overallRating !== null && store.overallRating !== undefined ? (
-                        <span style={{ color: '#d97706', fontWeight: 600 }}>
-                          {renderStars(store.overallRating)}
-                        </span>
-                      ) : (
-                        <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>No ratings</span>
-                      )}
-                    </td>
-
-                    <td style={{ padding: '0.75rem 1rem' }}>
-                      {store.userRating ? (
-                        <span style={{ color: '#059669', fontWeight: 600 }}>
-                          {'★'.repeat(store.userRating)} ({store.userRating}/5)
-                        </span>
-                      ) : (
-                        <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Not rated</span>
-                      )}
-                    </td>
-
-                    <td style={{ padding: '0.75rem 1rem' }}>
-                      {isUserRole ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                          <RatingInput
-                            value={currentStoreRating}
-                            disabled={isSubmitting}
-                            onChange={(val) => handleRateSubmit(store.id, val)}
-                          />
-                          {actionMsg && (
-                            <span
-                              style={{
-                                fontSize: '0.75rem',
-                                color: actionMsg.type === 'error' ? '#dc2626' : '#059669',
-                              }}
-                            >
-                              {actionMsg.text}
-                            </span>
-                          )}
-                        </div>
-                      ) : currentUser ? (
-                        <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Only Normal Users can rate</span>
-                      ) : (
-                        <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Log in as Normal User to rate</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <Table
+          columns={columns}
+          data={stores}
+          onSort={handleSort}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          emptyMessage="No stores found."
+        />
       )}
     </div>
   );

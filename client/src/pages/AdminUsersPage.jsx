@@ -30,6 +30,10 @@ export const AdminUsersPage = () => {
   const [addressFilter, setAddressFilter] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
 
+  // Sorting
+  const [sortBy, setSortBy] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
+
   // Form State
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
@@ -41,7 +45,7 @@ export const AdminUsersPage = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [nameFilter, emailFilter, addressFilter, roleFilter]);
+  }, [nameFilter, emailFilter, addressFilter, roleFilter, sortBy, sortOrder]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -52,6 +56,8 @@ export const AdminUsersPage = () => {
       if (emailFilter) params.email = emailFilter;
       if (addressFilter) params.address = addressFilter;
       if (roleFilter) params.role = roleFilter;
+      if (sortBy) params.sortBy = sortBy;
+      if (sortOrder) params.sortOrder = sortOrder;
 
       const res = await adminService.getUsers(params);
       setUsers(res.data || []);
@@ -59,6 +65,15 @@ export const AdminUsersPage = () => {
       setError(err.message || 'Failed to fetch users.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSort = (key) => {
+    if (sortBy === key) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(key);
+      setSortOrder('asc');
     }
   };
 
@@ -85,7 +100,7 @@ export const AdminUsersPage = () => {
     { header: 'ID', key: 'id' },
     { header: 'Name', key: 'name', sortable: true },
     { header: 'Email', key: 'email', sortable: true },
-    { header: 'Address', key: 'address' },
+    { header: 'Address', key: 'address', sortable: true },
     {
       header: 'Role',
       key: 'role',
@@ -112,7 +127,7 @@ export const AdminUsersPage = () => {
         <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <h1 className="page-title">Manage Users</h1>
-            <p className="page-description">Add new users and filter user listings</p>
+            <p className="page-description">Add new users, filter listings, and sort by column headings</p>
           </div>
           <Button variant="primary" size="sm" onClick={() => setShowAddForm(!showAddForm)}>
             {showAddForm ? 'Close Form' : '+ Add User'}
@@ -166,8 +181,8 @@ export const AdminUsersPage = () => {
             <option value="USER">USER</option>
             <option value="ADMIN">ADMIN</option>
           </select>
-          {(nameFilter || emailFilter || addressFilter || roleFilter) && (
-            <Button size="sm" variant="secondary" onClick={() => { setNameFilter(''); setEmailFilter(''); setAddressFilter(''); setRoleFilter(''); }}>
+          {(nameFilter || emailFilter || addressFilter || roleFilter || sortBy) && (
+            <Button size="sm" variant="secondary" onClick={() => { setNameFilter(''); setEmailFilter(''); setAddressFilter(''); setRoleFilter(''); setSortBy(''); setSortOrder('asc'); }}>
               Clear
             </Button>
           )}
@@ -178,7 +193,14 @@ export const AdminUsersPage = () => {
         ) : error ? (
           <ErrorMessage message={error} />
         ) : (
-          <Table columns={columns} data={users} emptyMessage="No users match the specified filters." />
+          <Table
+            columns={columns}
+            data={users}
+            onSort={handleSort}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            emptyMessage="No users match the specified filters."
+          />
         )}
       </div>
     </div>

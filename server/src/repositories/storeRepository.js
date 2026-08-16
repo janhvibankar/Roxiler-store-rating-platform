@@ -102,11 +102,30 @@ class StoreRepository {
       params.push(`%${filters.address}%`);
     }
 
-    sql += ` GROUP BY s.id ORDER BY s.id ASC`;
+    sql += ` GROUP BY s.id`;
+
+    const STORE_ADMIN_SORT_MAP = {
+      name: 's.name',
+      email: 's.email',
+      address: 's.address',
+      createdAt: 's.created_at',
+      rating: 'rating',
+    };
+
+    const sortDir = (filters.sortOrder || '').toLowerCase() === 'desc' ? 'DESC' : 'ASC';
+
+    if (filters.sortBy === 'rating') {
+      sql += ` ORDER BY AVG(r.rating) IS NULL ASC, AVG(r.rating) ${sortDir}, s.id ASC`;
+    } else if (filters.sortBy && STORE_ADMIN_SORT_MAP[filters.sortBy]) {
+      sql += ` ORDER BY ${STORE_ADMIN_SORT_MAP[filters.sortBy]} ${sortDir}, s.id ASC`;
+    } else {
+      sql += ` ORDER BY s.id ASC`;
+    }
+
     return db.query(sql, params);
   }
 
-  async getStoresForUser({ name, address, userId } = {}) {
+  async getStoresForUser({ name, address, userId, sortBy, sortOrder } = {}) {
     const validUserId = userId !== undefined && userId !== null ? userId : null;
     let sql = `
       SELECT 
@@ -136,7 +155,24 @@ class StoreRepository {
       params.push(`%${address}%`);
     }
 
-    sql += ` GROUP BY s.id ORDER BY s.id ASC`;
+    sql += ` GROUP BY s.id`;
+
+    const STORE_USER_SORT_MAP = {
+      name: 's.name',
+      address: 's.address',
+      overallRating: 'overallRating',
+    };
+
+    const sortDir = (sortOrder || '').toLowerCase() === 'desc' ? 'DESC' : 'ASC';
+
+    if (sortBy === 'overallRating') {
+      sql += ` ORDER BY AVG(r.rating) IS NULL ASC, AVG(r.rating) ${sortDir}, s.id ASC`;
+    } else if (sortBy && STORE_USER_SORT_MAP[sortBy]) {
+      sql += ` ORDER BY ${STORE_USER_SORT_MAP[sortBy]} ${sortDir}, s.id ASC`;
+    } else {
+      sql += ` ORDER BY s.id ASC`;
+    }
+
     const rows = await db.query(sql, params);
 
     return rows.map((row) => ({

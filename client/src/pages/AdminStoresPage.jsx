@@ -29,6 +29,10 @@ export const AdminStoresPage = () => {
   const [emailFilter, setEmailFilter] = useState('');
   const [addressFilter, setAddressFilter] = useState('');
 
+  // Sorting
+  const [sortBy, setSortBy] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
+
   // Form State
   const [storeName, setStoreName] = useState('');
   const [storeEmail, setStoreEmail] = useState('');
@@ -39,7 +43,7 @@ export const AdminStoresPage = () => {
 
   useEffect(() => {
     fetchStores();
-  }, [nameFilter, emailFilter, addressFilter]);
+  }, [nameFilter, emailFilter, addressFilter, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchStoreOwners();
@@ -53,6 +57,8 @@ export const AdminStoresPage = () => {
       if (nameFilter) params.name = nameFilter;
       if (emailFilter) params.email = emailFilter;
       if (addressFilter) params.address = addressFilter;
+      if (sortBy) params.sortBy = sortBy;
+      if (sortOrder) params.sortOrder = sortOrder;
 
       const res = await adminService.getStores(params);
       setStores(res.data || []);
@@ -73,6 +79,15 @@ export const AdminStoresPage = () => {
       }
     } catch (err) {
       console.error('Failed to fetch store owners:', err);
+    }
+  };
+
+  const handleSort = (key) => {
+    if (sortBy === key) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(key);
+      setSortOrder('asc');
     }
   };
 
@@ -97,7 +112,7 @@ export const AdminStoresPage = () => {
     { header: 'ID', key: 'id' },
     { header: 'Store Name', key: 'name', sortable: true },
     { header: 'Email', key: 'email', sortable: true },
-    { header: 'Address', key: 'address' },
+    { header: 'Address', key: 'address', sortable: true },
     {
       header: 'Average Rating',
       key: 'rating',
@@ -119,7 +134,7 @@ export const AdminStoresPage = () => {
         <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <h1 className="page-title">Manage Stores</h1>
-            <p className="page-description">Add stores, assign store owners, and view average ratings</p>
+            <p className="page-description">Add stores, assign store owners, filter listings, and sort by column headings</p>
           </div>
           <Button variant="primary" size="sm" onClick={() => setShowAddForm(!showAddForm)}>
             {showAddForm ? 'Close Form' : '+ Add Store'}
@@ -172,8 +187,8 @@ export const AdminStoresPage = () => {
           <input type="text" placeholder="Store name..." value={nameFilter} onChange={(e) => setNameFilter(e.target.value)} style={inputStyle} />
           <input type="text" placeholder="Email..." value={emailFilter} onChange={(e) => setEmailFilter(e.target.value)} style={inputStyle} />
           <input type="text" placeholder="Address..." value={addressFilter} onChange={(e) => setAddressFilter(e.target.value)} style={inputStyle} />
-          {(nameFilter || emailFilter || addressFilter) && (
-            <Button size="sm" variant="secondary" onClick={() => { setNameFilter(''); setEmailFilter(''); setAddressFilter(''); }}>
+          {(nameFilter || emailFilter || addressFilter || sortBy) && (
+            <Button size="sm" variant="secondary" onClick={() => { setNameFilter(''); setEmailFilter(''); setAddressFilter(''); setSortBy(''); setSortOrder('asc'); }}>
               Clear
             </Button>
           )}
@@ -184,7 +199,14 @@ export const AdminStoresPage = () => {
         ) : error ? (
           <ErrorMessage message={error} />
         ) : (
-          <Table columns={columns} data={stores} emptyMessage="No stores match the specified filters." />
+          <Table
+            columns={columns}
+            data={stores}
+            onSort={handleSort}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            emptyMessage="No stores match the specified filters."
+          />
         )}
       </div>
     </div>

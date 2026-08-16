@@ -37,8 +37,8 @@ const getStoreOwnerDashboard = async (req, res, next) => {
 const getUserStores = async (req, res, next) => {
   try {
     const userId = req.user ? req.user.userId : null;
-    const { name, address } = req.query;
-    const stores = await storeService.getStoresForUser({ name, address, userId });
+    const { name, address, sortBy, sortOrder } = req.query;
+    const stores = await storeService.getStoresForUser({ name, address, userId, sortBy, sortOrder });
     return sendSuccess(res, 200, 'User stores listing retrieved successfully', stores);
   } catch (error) {
     next(error);
