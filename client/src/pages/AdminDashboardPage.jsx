@@ -43,29 +43,31 @@ export const AdminDashboardPage = () => {
         ) : error ? (
           <ErrorMessage message={error} />
         ) : (
-          <div className="panel" style={{ background: '#ffffff', border: '1px solid #e2e8f0' }}>
-            <h2 style={{ fontSize: '1rem', fontWeight: 600, color: '#0f172a', marginBottom: '1rem' }}>
-              System Statistics
-            </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
-              <div style={{ padding: '0.85rem 1rem', background: '#f8fafc', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b' }}>Total Users</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#0f172a', marginTop: '0.15rem' }}>
-                  {stats?.totalUsers ?? 0}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div className="panel" style={{ background: '#ffffff', border: '1px solid #e2e8f0' }}>
+              <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', marginBottom: '1rem' }}>
+                System Metrics
+              </h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                <div style={{ padding: '1rem 1.1rem', background: '#ffffff', borderRadius: '6px', border: '1px solid #e2e8f0', borderTop: '3px solid #2563eb' }}>
+                  <div style={{ fontSize: '0.775rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Total Users</div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
+                    {stats?.totalUsers ?? 0}
+                  </div>
                 </div>
-              </div>
 
-              <div style={{ padding: '0.85rem 1rem', background: '#f8fafc', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b' }}>Total Stores</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#0f172a', marginTop: '0.15rem' }}>
-                  {stats?.totalStores ?? 0}
+                <div style={{ padding: '1rem 1.1rem', background: '#ffffff', borderRadius: '6px', border: '1px solid #e2e8f0', borderTop: '3px solid #059669' }}>
+                  <div style={{ fontSize: '0.775rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Total Stores</div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
+                    {stats?.totalStores ?? 0}
+                  </div>
                 </div>
-              </div>
 
-              <div style={{ padding: '0.85rem 1rem', background: '#f8fafc', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b' }}>Total Ratings</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#0f172a', marginTop: '0.15rem' }}>
-                  {stats?.totalRatings ?? 0}
+                <div style={{ padding: '1rem 1.1rem', background: '#ffffff', borderRadius: '6px', border: '1px solid #e2e8f0', borderTop: '3px solid #d97706' }}>
+                  <div style={{ fontSize: '0.775rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Total Ratings Submitted</div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
+                    {stats?.totalRatings ?? 0}
+                  </div>
                 </div>
               </div>
             </div>

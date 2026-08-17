@@ -32,11 +32,16 @@ export const UserStoreListPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const params = { ...extraParams };
-      if (nameFilter.trim()) params.name = nameFilter.trim();
-      if (addressFilter.trim()) params.address = addressFilter.trim();
-      if (sortBy) params.sortBy = sortBy;
-      if (sortOrder) params.sortOrder = sortOrder;
+      const effectiveName = 'name' in extraParams ? extraParams.name : nameFilter;
+      const effectiveAddress = 'address' in extraParams ? extraParams.address : addressFilter;
+      const effectiveSortBy = 'sortBy' in extraParams ? extraParams.sortBy : sortBy;
+      const effectiveSortOrder = 'sortOrder' in extraParams ? extraParams.sortOrder : sortOrder;
+
+      const params = {};
+      if (effectiveName && effectiveName.trim()) params.name = effectiveName.trim();
+      if (effectiveAddress && effectiveAddress.trim()) params.address = effectiveAddress.trim();
+      if (effectiveSortBy) params.sortBy = effectiveSortBy;
+      if (effectiveSortOrder) params.sortOrder = effectiveSortOrder;
 
       const response = await storeService.getAllStores(params);
       const storeData = response.data || [];
@@ -66,7 +71,7 @@ export const UserStoreListPage = () => {
     setAddressFilter('');
     setSortBy('');
     setSortOrder('asc');
-    fetchStores({ name: undefined, address: undefined, sortBy: undefined, sortOrder: undefined });
+    fetchStores({ name: '', address: '', sortBy: '', sortOrder: 'asc' });
   };
 
   const handleSort = (key) => {
@@ -214,14 +219,14 @@ export const UserStoreListPage = () => {
     <div className="page-container">
       <div className="page-header">
         <h1 className="page-title">Stores</h1>
-        <p className="page-description">Browse registered stores and rate your experience.</p>
+        <p className="page-description">Browse registered stores and share your rating experience.</p>
       </div>
 
-      {/* Simple Search Row */}
-      <div style={{ marginBottom: '1.25rem' }}>
-        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'flex-end' }}>
-          <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569' }}>Store name</label>
+      {/* Unified Search Section Panel */}
+      <div className="panel" style={{ marginBottom: '1.5rem', background: '#ffffff', padding: '1rem 1.25rem' }}>
+        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem', alignItems: 'flex-end' }}>
+          <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155' }}>Store Name</label>
             <input
               type="text"
               placeholder="Search by store name..."
@@ -240,8 +245,8 @@ export const UserStoreListPage = () => {
             />
           </div>
 
-          <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569' }}>Address</label>
+          <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155' }}>Address</label>
             <input
               type="text"
               placeholder="Search by address..."
@@ -266,7 +271,7 @@ export const UserStoreListPage = () => {
             </Button>
             {(nameFilter || addressFilter || sortBy) && (
               <Button type="button" variant="secondary" size="md" onClick={handleClearSearch}>
-                Clear
+                Clear Filter
               </Button>
             )}
           </div>

@@ -67,63 +67,88 @@ export const SignupPage = () => {
   };
 
   return (
-    <div className="page-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 120px)', padding: '2rem 1rem' }}>
-      <div className="panel" style={{ width: '100%', maxWidth: '400px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
-        <div style={{ marginBottom: '1.25rem' }}>
-          <h1 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.2rem' }}>Sign Up</h1>
-          <p style={{ color: '#64748b', fontSize: '0.875rem' }}>Register for RateStore</p>
+    <div className="auth-split-container">
+      {/* Left Column: Brand Identity */}
+      <div className="auth-brand-side">
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '6px', background: '#2563eb', color: '#ffffff', fontWeight: 700, fontSize: '0.9rem' }}>
+            RS
+          </span>
+          <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.01em' }}>RateStore</span>
         </div>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.25, marginBottom: '0.75rem' }}>
+          Create your account & start rating.
+        </h1>
+        <p style={{ color: '#64748b', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+          Join RateStore to share genuine feedback on local stores, track your ratings, and help community members find top-rated services.
+        </p>
+        <div style={{ padding: '0.85rem 1rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', fontSize: '0.825rem', color: '#475569', lineHeight: 1.5 }}>
+          <strong style={{ color: '#0f172a', display: 'block', marginBottom: '0.25rem' }}>Account Rules:</strong>
+          • Name: 20 to 60 characters<br />
+          • Password: 8–16 characters, 1 uppercase & 1 special character<br />
+          • Public registration automatically creates Normal User accounts.
+        </div>
+      </div>
 
-        {error && <ErrorMessage message={error} />}
-        {successMsg && (
-          <div style={{ padding: '0.5rem 0.75rem', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', borderRadius: '4px', fontSize: '0.85rem', marginBottom: '0.85rem' }}>
-            {successMsg}
+      {/* Right Column: Form Panel */}
+      <div className="auth-form-side">
+        <div className="panel" style={{ background: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgba(15, 23, 42, 0.08)' }}>
+          <div style={{ marginBottom: '1.25rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.2rem' }}>Sign Up</h2>
+            <p style={{ color: '#64748b', fontSize: '0.85rem' }}>Create a new RateStore user account</p>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit}>
-          <Input
-            label="Name"
-            id="name"
-            placeholder="Full Name (20-60 characters)"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+          {error && <ErrorMessage message={error} />}
+          {successMsg && (
+            <div style={{ padding: '0.5rem 0.75rem', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', borderRadius: '4px', fontSize: '0.85rem', marginBottom: '0.85rem' }}>
+              {successMsg}
+            </div>
+          )}
 
-          <Input
-            label="Email"
-            id="email"
-            type="email"
-            placeholder="name@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <form onSubmit={handleSubmit}>
+            <Input
+              label="Full Name"
+              id="name"
+              placeholder="Full Name (20-60 characters)"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
 
-          <Input
-            label="Address"
-            id="address"
-            placeholder="Enter physical address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            required
-          />
+            <Input
+              label="Email Address"
+              id="email"
+              type="email"
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
 
-          <Input
-            label="Password"
-            id="password"
-            type="password"
-            placeholder="8-16 chars, 1 uppercase, 1 special char"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+            <Input
+              label="Physical Address"
+              id="address"
+              placeholder="Enter physical address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              required
+            />
 
-          <Button type="submit" variant="primary" fullWidth disabled={loading} style={{ marginTop: '0.5rem' }}>
-            {loading ? 'Registering...' : 'Register Account'}
-          </Button>
-        </form>
+            <Input
+              label="Password"
+              id="password"
+              type="password"
+              placeholder="8-16 chars, 1 uppercase, 1 special char"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+
+            <Button type="submit" variant="primary" fullWidth disabled={loading} style={{ marginTop: '0.5rem' }}>
+              {loading ? 'Registering...' : 'Register Account'}
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   );

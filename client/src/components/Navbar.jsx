@@ -54,13 +54,31 @@ export const Navbar = () => {
           zIndex: 100,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
           <Link to="/" style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0f172a', textDecoration: 'none' }}>
             RateStore
           </Link>
-          {currentUser && (
+          {(!currentUser || currentUser.role === 'USER') && (
             <Link to="/stores" style={{ color: '#475569', fontSize: '0.875rem', fontWeight: 500 }}>
               Stores
+            </Link>
+          )}
+          {currentUser && currentUser.role === 'ADMIN' && (
+            <>
+              <Link to="/admin/dashboard" style={{ color: '#475569', fontSize: '0.875rem', fontWeight: 500 }}>
+                Dashboard
+              </Link>
+              <Link to="/admin/users" style={{ color: '#475569', fontSize: '0.875rem', fontWeight: 500 }}>
+                Users
+              </Link>
+              <Link to="/admin/stores" style={{ color: '#475569', fontSize: '0.875rem', fontWeight: 500 }}>
+                Stores
+              </Link>
+            </>
+          )}
+          {currentUser && currentUser.role === 'STORE_OWNER' && (
+            <Link to="/owner/dashboard" style={{ color: '#475569', fontSize: '0.875rem', fontWeight: 500 }}>
+              Dashboard
             </Link>
           )}
         </div>
@@ -70,20 +88,10 @@ export const Navbar = () => {
             <>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}>
                 <span style={{ fontWeight: 600, color: '#0f172a' }}>{currentUser.name}</span>
-                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>({currentUser.role})</span>
+                <span className={`badge ${currentUser.role === 'ADMIN' ? 'badge-admin' : currentUser.role === 'STORE_OWNER' ? 'badge-owner' : 'badge-user'}`}>
+                  {currentUser.role}
+                </span>
               </div>
-
-              {currentUser.role === 'ADMIN' && (
-                <Link to="/admin/dashboard" style={{ color: '#2563eb', fontSize: '0.85rem', fontWeight: 500 }}>
-                  Admin Dashboard
-                </Link>
-              )}
-
-              {currentUser.role === 'STORE_OWNER' && (
-                <Link to="/owner/dashboard" style={{ color: '#b45309', fontSize: '0.85rem', fontWeight: 500 }}>
-                  Owner Dashboard
-                </Link>
-              )}
 
               <Button variant="secondary" size="sm" onClick={() => setShowPasswordModal(true)}>
                 Update Password

@@ -9,7 +9,7 @@ export const Table = ({
   emptyMessage = 'No records found',
 }) => {
   return (
-    <div style={{ overflowX: 'auto', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#ffffff' }}>
+    <div style={{ overflowX: 'auto', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#ffffff', boxShadow: '0 1px 2px 0 rgba(15, 23, 42, 0.05)' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
         <thead>
           <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
@@ -25,17 +25,20 @@ export const Table = ({
                   style={{
                     padding: '0.75rem 1rem',
                     fontWeight: 600,
-                    fontSize: '0.8rem',
+                    fontSize: '0.775rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.03em',
                     color: isSorted ? '#2563eb' : '#475569',
                     cursor: col.sortable ? 'pointer' : 'default',
                     userSelect: 'none',
+                    borderBottom: '1px solid #cbd5e1',
                   }}
                 >
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
                     {col.header}
                     {col.sortable && (
-                      <span style={{ fontSize: '0.75rem', color: isSorted ? '#2563eb' : '#94a3b8' }}>
-                        {isAsc ? '↑' : isDesc ? '↓' : '⇅'}
+                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: isSorted ? '#2563eb' : '#cbd5e1' }}>
+                        {isAsc ? '▲' : isDesc ? '▼' : '⇅'}
                       </span>
                     )}
                   </div>
@@ -47,7 +50,7 @@ export const Table = ({
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
+              <td colSpan={columns.length} style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
                 {emptyMessage}
               </td>
             </tr>
@@ -57,8 +60,11 @@ export const Table = ({
                 key={row.id || index}
                 style={{
                   borderBottom: '1px solid #f1f5f9',
-                  background: 'transparent',
+                  background: index % 2 === 0 ? '#ffffff' : '#fcfdfd',
+                  transition: 'background-color 0.15s ease',
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#f1f5f9')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = index % 2 === 0 ? '#ffffff' : '#fcfdfd')}
               >
                 {columns.map((col) => (
                   <td key={col.key || col.header} style={{ padding: '0.75rem 1rem', color: '#0f172a' }}>
