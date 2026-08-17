@@ -1,24 +1,38 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userRepository = require('../repositories/userRepository');
-const { validatePassword } = require('../utils/passwordValidator');
+const {
+  validateName,
+  validateAddress,
+  validateEmail,
+  validatePassword,
+} = require('../utils/validators');
 
 class AuthService {
   async registerUser({ name, email, address, password }) {
-    if (!name || !email || !address || !password) {
-      const err = new Error('All fields (name, email, address, password) are required.');
+    const errors = {};
+
+    const nameVal = validateName(name, 'Name');
+    if (!nameVal.isValid) errors.name = nameVal.message;
+
+    const emailVal = validateEmail(email);
+    if (!emailVal.isValid) errors.email = emailVal.message;
+
+    const addrVal = validateAddress(address, 'Address');
+    if (!addrVal.isValid) errors.address = addrVal.message;
+
+    const passVal = validatePassword(password);
+    if (!passVal.isValid) errors.password = passVal.message;
+
+    if (Object.keys(errors).length > 0) {
+      const err = new Error(errors[Object.keys(errors)[0]] || 'Validation failed');
       err.statusCode = 400;
+      err.errors = errors;
       throw err;
     }
 
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.isValid) {
-      const err = new Error(passwordValidation.message);
-      err.statusCode = 400;
-      throw err;
-    }
-
-    const existingUser = await userRepository.findUserByEmail(email);
+    const normalizedEmail = emailVal.value;
+    const existingUser = await userRepository.findUserByEmail(normalizedEmail);
     if (existingUser) {
       const err = new Error('Email address is already registered.');
       err.statusCode = 409;
@@ -29,9 +43,9 @@ class AuthService {
 
     // Public signup strictly creates role = USER
     const createdUser = await userRepository.createUser({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      address: address.trim(),
+      name: nameVal.value,
+      email: normalizedEmail,
+      address: addrVal.value,
       password: hashedPassword,
       role: 'USER',
     });
@@ -46,7 +60,8 @@ class AuthService {
       throw err;
     }
 
-    const user = await userRepository.findUserWithPasswordByEmail(email.trim().toLowerCase());
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await userRepository.findUserWithPasswordByEmail(normalizedEmail);
     if (!user) {
       const err = new Error('Invalid email or password.');
       err.statusCode = 401;
@@ -115,6 +130,7 @@ class AuthService {
     if (!passwordValidation.isValid) {
       const err = new Error(passwordValidation.message);
       err.statusCode = 400;
+      err.errors = { newPassword: passwordValidation.message };
       throw err;
     }
 
@@ -126,3 +142,4 @@ class AuthService {
 }
 
 module.exports = new AuthService();
+

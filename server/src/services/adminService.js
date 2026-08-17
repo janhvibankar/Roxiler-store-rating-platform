@@ -3,31 +3,43 @@ const db = require('../config/db');
 const userRepository = require('../repositories/userRepository');
 const storeRepository = require('../repositories/storeRepository');
 const ratingRepository = require('../repositories/ratingRepository');
-const { validatePassword } = require('../utils/passwordValidator');
+const {
+  validateName,
+  validateAddress,
+  validateEmail,
+  validatePassword,
+} = require('../utils/validators');
 
 class AdminService {
   async createUserByAdmin({ name, email, address, password, role = 'USER' }) {
-    if (!name || !email || !address || !password) {
-      const err = new Error('All fields (name, email, address, password) are required.');
-      err.statusCode = 400;
-      throw err;
-    }
+    const errors = {};
+
+    const nameVal = validateName(name, 'Name');
+    if (!nameVal.isValid) errors.name = nameVal.message;
+
+    const emailVal = validateEmail(email);
+    if (!emailVal.isValid) errors.email = emailVal.message;
+
+    const addrVal = validateAddress(address, 'Address');
+    if (!addrVal.isValid) errors.address = addrVal.message;
+
+    const passVal = validatePassword(password);
+    if (!passVal.isValid) errors.password = passVal.message;
 
     const allowedRoles = ['USER', 'ADMIN', 'STORE_OWNER'];
     if (!allowedRoles.includes(role)) {
-      const err = new Error(`Admin user creation allows role 'USER', 'ADMIN', or 'STORE_OWNER'. Role '${role}' is not allowed.`);
+      errors.role = `Admin user creation allows role 'USER', 'ADMIN', or 'STORE_OWNER'. Role '${role}' is not allowed.`;
+    }
+
+    if (Object.keys(errors).length > 0) {
+      const err = new Error(errors[Object.keys(errors)[0]] || 'Validation failed');
       err.statusCode = 400;
+      err.errors = errors;
       throw err;
     }
 
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.isValid) {
-      const err = new Error(passwordValidation.message);
-      err.statusCode = 400;
-      throw err;
-    }
-
-    const existingUser = await userRepository.findUserByEmail(email);
+    const normalizedEmail = emailVal.value;
+    const existingUser = await userRepository.findUserByEmail(normalizedEmail);
     if (existingUser) {
       const err = new Error('Email address is already registered.');
       err.statusCode = 409;
@@ -37,9 +49,9 @@ class AdminService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     return userRepository.createUser({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      address: address.trim(),
+      name: nameVal.value,
+      email: normalizedEmail,
+      address: addrVal.value,
       password: hashedPassword,
       role,
     });

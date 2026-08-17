@@ -82,6 +82,37 @@ export const AdminUsersPage = () => {
     setFormError(null);
     setFormSuccess('');
 
+    const trimmedName = newName.trim();
+    if (trimmedName.length < 20 || trimmedName.length > 60) {
+      setFormError('Name must be between 20 and 60 characters.');
+      return;
+    }
+
+    const trimmedEmail = newEmail.trim().toLowerCase();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setFormError('Please enter a valid email address.');
+      return;
+    }
+
+    const trimmedAddress = newAddress.trim();
+    if (trimmedAddress.length > 400) {
+      setFormError('Address cannot exceed 400 characters.');
+      return;
+    }
+
+    if (
+      newPassword.length < 8 ||
+      newPassword.length > 16 ||
+      !/[A-Z]/.test(newPassword) ||
+      !/[^A-Za-z0-9]/.test(newPassword)
+    ) {
+      setFormError(
+        'Password must be 8–16 characters and contain at least one uppercase letter and one special character.'
+      );
+      return;
+    }
+
     try {
       await adminService.createUser({ name: newName, email: newEmail, address: newAddress, password: newPassword, role: newRole });
       setFormSuccess(`User "${newName}" (${newRole}) created successfully.`);
@@ -159,6 +190,7 @@ export const AdminUsersPage = () => {
                   style={{ ...inputStyle }}
                 >
                   <option value="USER">USER (Normal User)</option>
+                  <option value="STORE_OWNER">STORE_OWNER (Store Owner)</option>
                   <option value="ADMIN">ADMIN (System Administrator)</option>
                 </select>
               </div>

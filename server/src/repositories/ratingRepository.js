@@ -46,7 +46,21 @@ class RatingRepository {
     return db.query(sql, [store_id]);
   }
 
-  async getRatingUsersForStore(storeId) {
+  async getRatingUsersForStore(storeId, filters = {}) {
+    const { sortBy = 'updated_at', sortOrder = 'desc' } = filters;
+
+    const columnMap = {
+      name: 'u.name',
+      email: 'u.email',
+      address: 'u.address',
+      rating: 'r.rating',
+      created_at: 'r.created_at',
+      updated_at: 'r.updated_at',
+    };
+
+    const sortColumn = columnMap[sortBy] || 'r.updated_at';
+    const orderDirection = (sortOrder || '').toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+
     const sql = `
       SELECT 
         u.id AS user_id,
@@ -60,7 +74,7 @@ class RatingRepository {
       JOIN users u ON r.user_id = u.id
       JOIN stores s ON r.store_id = s.id
       WHERE r.store_id = ?
-      ORDER BY r.updated_at DESC
+      ORDER BY ${sortColumn} ${orderDirection}
     `;
     const rows = await db.query(sql, [storeId]);
     return rows.map((r) => ({

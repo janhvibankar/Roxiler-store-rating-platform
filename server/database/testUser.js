@@ -37,7 +37,7 @@ async function runUserTests() {
     const user1SignupRes = await fetch(`${API_URL}/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'Phase6 User One', email: userEmail, address: '123 User Street', password }),
+      body: JSON.stringify({ name: 'Phase6 User One Account', email: userEmail, address: '123 User Street', password }),
     });
     assert(user1SignupRes.status === 201, 'Created test USER 1 via signup');
     const user1LoginRes = await fetch(`${API_URL}/auth/login`, {
@@ -54,7 +54,7 @@ async function runUserTests() {
     const user2SignupRes = await fetch(`${API_URL}/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'Phase6 User Two', email: user2Email, address: '456 User Lane', password }),
+      body: JSON.stringify({ name: 'Phase6 User Two Account', email: user2Email, address: '456 User Lane', password }),
     });
     assert(user2SignupRes.status === 201, 'Created test USER 2 via signup');
     const user2LoginRes = await fetch(`${API_URL}/auth/login`, {

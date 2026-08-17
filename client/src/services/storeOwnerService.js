@@ -5,8 +5,8 @@ export const storeOwnerService = {
     return api.get('/owner/dashboard');
   },
 
-  getStoreRatings: async (storeId) => {
-    return api.get(`/owner/stores/${storeId}/ratings`);
+  getStoreRatings: async (storeId, params = {}) => {
+    return api.get(`/owner/stores/${storeId}/ratings`, { params });
   },
 };
 

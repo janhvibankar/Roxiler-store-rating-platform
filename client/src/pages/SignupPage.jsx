@@ -17,9 +17,41 @@ export const SignupPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
     setSuccessMsg('');
+
+    const trimmedName = name.trim();
+    if (trimmedName.length < 20 || trimmedName.length > 60) {
+      setError('Name must be between 20 and 60 characters.');
+      return;
+    }
+
+    const trimmedEmail = email.trim().toLowerCase();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    const trimmedAddress = address.trim();
+    if (trimmedAddress.length > 400) {
+      setError('Address cannot exceed 400 characters.');
+      return;
+    }
+
+    if (
+      password.length < 8 ||
+      password.length > 16 ||
+      !/[A-Z]/.test(password) ||
+      !/[^A-Za-z0-9]/.test(password)
+    ) {
+      setError(
+        'Password must be 8–16 characters and contain at least one uppercase letter and one special character.'
+      );
+      return;
+    }
+
+    setLoading(true);
 
     try {
       await authService.signup({ name, email, address, password });

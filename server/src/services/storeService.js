@@ -1,11 +1,32 @@
 const storeRepository = require('../repositories/storeRepository');
 const userRepository = require('../repositories/userRepository');
+const {
+  validateName,
+  validateAddress,
+  validateEmail,
+} = require('../utils/validators');
 
 class StoreService {
   async createStore({ name, email, address, owner_id }) {
-    if (!name || !email || !address || !owner_id) {
-      const err = new Error('All store fields (name, email, address, owner_id) are required.');
+    const errors = {};
+
+    const nameVal = validateName(name, 'Store Name');
+    if (!nameVal.isValid) errors.name = nameVal.message;
+
+    const emailVal = validateEmail(email);
+    if (!emailVal.isValid) errors.email = emailVal.message;
+
+    const addrVal = validateAddress(address, 'Address');
+    if (!addrVal.isValid) errors.address = addrVal.message;
+
+    if (!owner_id) {
+      errors.owner_id = 'Owner ID is required.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      const err = new Error(errors[Object.keys(errors)[0]] || 'Validation failed');
       err.statusCode = 400;
+      err.errors = errors;
       throw err;
     }
 
@@ -22,7 +43,12 @@ class StoreService {
       throw err;
     }
 
-    return storeRepository.createStore({ name, email, address, owner_id });
+    return storeRepository.createStore({
+      name: nameVal.value,
+      email: emailVal.value,
+      address: addrVal.value,
+      owner_id,
+    });
   }
 
   async getStoreById(id) {

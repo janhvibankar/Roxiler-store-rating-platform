@@ -14,7 +14,7 @@ const getOwnerDashboard = async (req, res, next) => {
 const getStoreRatingUsers = async (req, res, next) => {
   try {
     const storeId = req.params.storeId || req.params.id;
-    const ratings = await storeOwnerService.getStoreRatingUsers(storeId);
+    const ratings = await storeOwnerService.getStoreRatingUsers(storeId, req.query);
     return sendSuccess(res, 200, 'Store rating users retrieved successfully', ratings);
   } catch (error) {
     next(error);

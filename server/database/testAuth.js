@@ -28,7 +28,7 @@ async function runAuthTests() {
     const timestamp = Date.now();
     const testEmail = `auth_test_${timestamp}@example.com`;
     const signupData = {
-      name: 'Auth Test User',
+      name: 'Auth Test User Account',
       email: testEmail,
       address: '777 Test Avenue',
       password: 'TestPassword123!',
@@ -66,7 +66,7 @@ async function runAuthTests() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: 'Weak Pass',
+        name: 'Weak Pass User Account',
         email: `weak_${timestamp}@example.com`,
         address: 'Addr',
         password: 'weak',

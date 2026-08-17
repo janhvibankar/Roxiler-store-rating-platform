@@ -1,18 +1,20 @@
 const ratingRepository = require('../repositories/ratingRepository');
 const storeRepository = require('../repositories/storeRepository');
+const { validateRating } = require('../utils/validators');
 
 class RatingService {
   async submitRating({ user_id, store_id, rating }) {
-    if (!user_id || !store_id || rating === undefined || rating === null) {
+    if (!user_id || !store_id) {
       const err = new Error('storeId and rating are required.');
       err.statusCode = 400;
       throw err;
     }
 
-    const numericRating = Number(rating);
-    if (!Number.isInteger(numericRating) || numericRating < 1 || numericRating > 5) {
-      const err = new Error('Rating must be an integer between 1 and 5.');
+    const ratingVal = validateRating(rating);
+    if (!ratingVal.isValid) {
+      const err = new Error(ratingVal.message);
       err.statusCode = 400;
+      err.errors = { rating: ratingVal.message };
       throw err;
     }
 
@@ -23,20 +25,21 @@ class RatingService {
       throw err;
     }
 
-    return ratingRepository.upsertRating({ user_id, store_id, rating: numericRating });
+    return ratingRepository.upsertRating({ user_id, store_id, rating: ratingVal.value });
   }
 
   async updateRating({ user_id, store_id, rating }) {
-    if (!user_id || !store_id || rating === undefined || rating === null) {
+    if (!user_id || !store_id) {
       const err = new Error('storeId and rating are required.');
       err.statusCode = 400;
       throw err;
     }
 
-    const numericRating = Number(rating);
-    if (!Number.isInteger(numericRating) || numericRating < 1 || numericRating > 5) {
-      const err = new Error('Rating must be an integer between 1 and 5.');
+    const ratingVal = validateRating(rating);
+    if (!ratingVal.isValid) {
+      const err = new Error(ratingVal.message);
       err.statusCode = 400;
+      err.errors = { rating: ratingVal.message };
       throw err;
     }
 
@@ -49,10 +52,10 @@ class RatingService {
 
     const existingRating = await ratingRepository.findRatingByUserAndStore(user_id, store_id);
     if (!existingRating) {
-      return ratingRepository.upsertRating({ user_id, store_id, rating: numericRating });
+      return ratingRepository.upsertRating({ user_id, store_id, rating: ratingVal.value });
     }
 
-    return ratingRepository.updateRating(user_id, store_id, numericRating);
+    return ratingRepository.updateRating(user_id, store_id, ratingVal.value);
   }
 
   async getRatingsForStore(store_id) {

@@ -13,6 +13,9 @@ export const StoreOwnerDashboardPage = () => {
   const [error, setError] = useState(null);
   const [ratingsError, setRatingsError] = useState(null);
 
+  const [sortBy, setSortBy] = useState('created_at');
+  const [sortOrder, setSortOrder] = useState('desc');
+
   useEffect(() => {
     fetchDashboard();
   }, []);
@@ -27,7 +30,7 @@ export const StoreOwnerDashboardPage = () => {
       if (storeList.length > 0) {
         const firstStoreId = storeList[0].storeId || storeList[0].id;
         setSelectedStoreId(firstStoreId);
-        fetchStoreRatings(firstStoreId);
+        fetchStoreRatings(firstStoreId, sortBy, sortOrder);
       }
     } catch (err) {
       setError(err.message || 'Failed to fetch store owner dashboard.');
@@ -36,11 +39,12 @@ export const StoreOwnerDashboardPage = () => {
     }
   };
 
-  const fetchStoreRatings = async (storeId) => {
+  const fetchStoreRatings = async (storeId, sBy = sortBy, sOrder = sortOrder) => {
+    if (!storeId) return;
     setLoadingRatings(true);
     setRatingsError(null);
     try {
-      const res = await storeOwnerService.getStoreRatings(storeId);
+      const res = await storeOwnerService.getStoreRatings(storeId, { sortBy: sBy, sortOrder: sOrder });
       setRatings(res.data || []);
     } catch (err) {
       setRatingsError(err.message || 'Failed to fetch ratings for store.');
@@ -49,9 +53,21 @@ export const StoreOwnerDashboardPage = () => {
     }
   };
 
+  const handleSort = (field) => {
+    let nextOrder = 'asc';
+    if (sortBy === field) {
+      nextOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    }
+    setSortBy(field);
+    setSortOrder(nextOrder);
+    if (selectedStoreId) {
+      fetchStoreRatings(selectedStoreId, field, nextOrder);
+    }
+  };
+
   const handleSelectStore = (storeId) => {
     setSelectedStoreId(storeId);
-    fetchStoreRatings(storeId);
+    fetchStoreRatings(storeId, sortBy, sortOrder);
   };
 
   const selectedStore = stores.find((s) => (s.storeId || s.id) === selectedStoreId);
@@ -152,11 +168,21 @@ export const StoreOwnerDashboardPage = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>
-                      <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Customer Name</th>
-                      <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Email</th>
-                      <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Address</th>
-                      <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Rating</th>
-                      <th style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>Date</th>
+                      <th onClick={() => handleSort('name')} style={{ padding: '0.75rem 1rem', fontWeight: 600, cursor: 'pointer', userSelect: 'none' }}>
+                        Customer Name {sortBy === 'name' ? (sortOrder === 'asc' ? '▲' : '▼') : ''}
+                      </th>
+                      <th onClick={() => handleSort('email')} style={{ padding: '0.75rem 1rem', fontWeight: 600, cursor: 'pointer', userSelect: 'none' }}>
+                        Email {sortBy === 'email' ? (sortOrder === 'asc' ? '▲' : '▼') : ''}
+                      </th>
+                      <th onClick={() => handleSort('address')} style={{ padding: '0.75rem 1rem', fontWeight: 600, cursor: 'pointer', userSelect: 'none' }}>
+                        Address {sortBy === 'address' ? (sortOrder === 'asc' ? '▲' : '▼') : ''}
+                      </th>
+                      <th onClick={() => handleSort('rating')} style={{ padding: '0.75rem 1rem', fontWeight: 600, cursor: 'pointer', userSelect: 'none' }}>
+                        Rating {sortBy === 'rating' ? (sortOrder === 'asc' ? '▲' : '▼') : ''}
+                      </th>
+                      <th onClick={() => handleSort('created_at')} style={{ padding: '0.75rem 1rem', fontWeight: 600, cursor: 'pointer', userSelect: 'none' }}>
+                        Date {sortBy === 'created_at' ? (sortOrder === 'asc' ? '▲' : '▼') : ''}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>

@@ -68,7 +68,7 @@ async function runAuthzTests() {
         Authorization: `Bearer ${adminToken}`,
       },
       body: JSON.stringify({
-        name: 'Second Store Owner',
+        name: 'Second Store Owner Account',
         email: owner2Email,
         address: '555 Owner Lane',
         password: 'OwnerPass123!',
@@ -208,7 +208,7 @@ async function runAuthzTests() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: 'Hacker User',
+        name: 'Hacker User Account Name',
         email: hackerEmail,
         address: 'Hacker Alley',
         password: 'HackPass123!', // Valid 11 char password

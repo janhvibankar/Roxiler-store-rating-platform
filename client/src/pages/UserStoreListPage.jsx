@@ -81,6 +81,15 @@ export const UserStoreListPage = () => {
   const handleRateSubmit = async (storeId, newRatingValue) => {
     if (!isUserRole) return;
 
+    const num = Number(newRatingValue);
+    if (!Number.isInteger(num) || num < 1 || num > 5) {
+      setActionMessageMap((prev) => ({
+        ...prev,
+        [storeId]: { type: 'error', text: 'Rating must be between 1 and 5.' },
+      }));
+      return;
+    }
+
     setSubmittingMap((prev) => ({ ...prev, [storeId]: true }));
     setActionMessageMap((prev) => ({ ...prev, [storeId]: null }));
 

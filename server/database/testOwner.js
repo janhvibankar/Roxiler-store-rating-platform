@@ -74,7 +74,7 @@ async function runOwnerTests() {
     const userSignupRes = await fetch(`${API_URL}/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'Rater Customer', email: userEmail, address: '300 Rater Rd', password }),
+      body: JSON.stringify({ name: 'Rater Customer User Account', email: userEmail, address: '300 Rater Rd', password }),
     });
     const userLoginRes = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
@@ -138,7 +138,7 @@ async function runOwnerTests() {
     await fetch(`${API_URL}/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'Priya Customer', email: user2Email, address: '500 Customer Way', password }),
+      body: JSON.stringify({ name: 'Priya Customer User Account', email: user2Email, address: '500 Customer Way', password }),
     });
     const user2LoginRes = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',

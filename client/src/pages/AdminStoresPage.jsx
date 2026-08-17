@@ -96,6 +96,30 @@ export const AdminStoresPage = () => {
     setFormError(null);
     setFormSuccess('');
 
+    const trimmedName = storeName.trim();
+    if (trimmedName.length < 20 || trimmedName.length > 60) {
+      setFormError('Store Name must be between 20 and 60 characters.');
+      return;
+    }
+
+    const trimmedEmail = storeEmail.trim().toLowerCase();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setFormError('Please enter a valid email address.');
+      return;
+    }
+
+    const trimmedAddress = storeAddress.trim();
+    if (trimmedAddress.length > 400) {
+      setFormError('Address cannot exceed 400 characters.');
+      return;
+    }
+
+    if (!ownerId) {
+      setFormError('Please select a valid Store Owner.');
+      return;
+    }
+
     try {
       await adminService.createStore({ name: storeName, email: storeEmail, address: storeAddress, owner_id: parseInt(ownerId, 10) });
       setFormSuccess(`Store "${storeName}" created successfully.`);

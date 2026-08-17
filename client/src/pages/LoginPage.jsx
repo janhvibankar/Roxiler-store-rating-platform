@@ -15,15 +15,30 @@ export const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
     setSuccessMsg('');
 
+    const trimmedEmail = email.trim().toLowerCase();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const res = await authService.login({ email, password });
-      setSuccessMsg(`Logged in successfully as ${res.data.user.name} (${res.data.user.role})`);
+      const userRole = res.data?.user?.role;
+      setSuccessMsg(`Logged in successfully as ${res.data.user.name} (${userRole})`);
       setTimeout(() => {
-        navigate('/');
+        if (userRole === 'ADMIN') {
+          navigate('/admin/dashboard');
+        } else if (userRole === 'STORE_OWNER') {
+          navigate('/owner/dashboard');
+        } else {
+          navigate('/stores');
+        }
       }, 1000);
     } catch (err) {
       setError(err.message || 'Login failed.');
