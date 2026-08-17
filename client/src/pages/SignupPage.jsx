@@ -68,39 +68,34 @@ export const SignupPage = () => {
 
   return (
     <div className="auth-split-container">
-      {/* Left Column: Brand Identity */}
+      {/* Left Column: Editorial Brand Copy */}
       <div className="auth-brand-side">
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '6px', background: '#2563eb', color: '#ffffff', fontWeight: 700, fontSize: '0.9rem' }}>
-            RS
-          </span>
-          <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.01em' }}>RateStore</span>
-        </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.25, marginBottom: '0.75rem' }}>
+        <span className="eyebrow" style={{ marginBottom: '0.5rem' }}>Join RateStore</span>
+        <h1 style={{ fontSize: '2.1rem', fontWeight: 800, color: '#111827', lineHeight: 1.2, marginBottom: '0.85rem', letterSpacing: '-0.02em' }}>
           Create your account & start rating.
         </h1>
-        <p style={{ color: '#64748b', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+        <p style={{ color: '#4b5563', fontSize: '0.975rem', lineHeight: 1.6, marginBottom: '1.75rem' }}>
           Join RateStore to share genuine feedback on local stores, track your ratings, and help community members find top-rated services.
         </p>
-        <div style={{ padding: '0.85rem 1rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', fontSize: '0.825rem', color: '#475569', lineHeight: 1.5 }}>
-          <strong style={{ color: '#0f172a', display: 'block', marginBottom: '0.25rem' }}>Account Rules:</strong>
-          • Name: 20 to 60 characters<br />
-          • Password: 8–16 characters, 1 uppercase & 1 special character<br />
+        <div style={{ padding: '1rem 1.15rem', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '0.85rem', color: '#374151', lineHeight: 1.6 }}>
+          <strong style={{ color: '#111827', display: 'block', marginBottom: '0.35rem', fontSize: '0.875rem' }}>Registration Rules:</strong>
+          • Full Name: 20 to 60 characters<br />
+          • Password: 8–16 chars, 1 uppercase & 1 special character<br />
           • Public registration automatically creates Normal User accounts.
         </div>
       </div>
 
       {/* Right Column: Form Panel */}
       <div className="auth-form-side">
-        <div className="panel" style={{ background: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgba(15, 23, 42, 0.08)' }}>
-          <div style={{ marginBottom: '1.25rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.2rem' }}>Sign Up</h2>
-            <p style={{ color: '#64748b', fontSize: '0.85rem' }}>Create a new RateStore user account</p>
+        <div className="panel" style={{ background: '#ffffff', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px 0 rgba(17, 24, 39, 0.05)', padding: '1.75rem' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#111827', marginBottom: '0.25rem', letterSpacing: '-0.01em' }}>Create account</h2>
+            <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Register a new RateStore user account</p>
           </div>
 
           {error && <ErrorMessage message={error} />}
           {successMsg && (
-            <div style={{ padding: '0.5rem 0.75rem', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', borderRadius: '4px', fontSize: '0.85rem', marginBottom: '0.85rem' }}>
+            <div style={{ padding: '0.6rem 0.85rem', background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#166534', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '1rem' }}>
               {successMsg}
             </div>
           )}
@@ -144,10 +139,17 @@ export const SignupPage = () => {
               required
             />
 
-            <Button type="submit" variant="primary" fullWidth disabled={loading} style={{ marginTop: '0.5rem' }}>
+            <Button type="submit" variant="primary" fullWidth disabled={loading} style={{ marginTop: '0.5rem', padding: '0.6rem 1rem' }}>
               {loading ? 'Registering...' : 'Register Account'}
             </Button>
           </form>
+
+          <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #f3f4f6', textAlign: 'center', fontSize: '0.85rem', color: '#6b7280' }}>
+            Already have an account?{' '}
+            <a href="/login" style={{ color: '#2563eb', fontWeight: 600 }}>
+              Sign in
+            </a>
+          </div>
         </div>
       </div>
     </div>

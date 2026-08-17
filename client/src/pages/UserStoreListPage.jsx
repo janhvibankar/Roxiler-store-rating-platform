@@ -128,21 +128,51 @@ export const UserStoreListPage = () => {
     }
   };
 
+  const getInitials = (nameStr) => {
+    if (!nameStr) return 'ST';
+    const parts = nameStr.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return nameStr.slice(0, 2).toUpperCase();
+  };
+
   const renderStars = (ratingVal) => {
-    if (ratingVal === null || ratingVal === undefined) return 'No ratings';
+    if (ratingVal === null || ratingVal === undefined) return 'No ratings yet';
     const num = Math.round(Number(ratingVal));
     const fullStars = '★'.repeat(num);
     const emptyStars = '☆'.repeat(5 - num);
-    return `${fullStars}${emptyStars} (${ratingVal})`;
+    return `${fullStars}${emptyStars} ${ratingVal}`;
   };
 
   const columns = [
     {
-      header: 'Store Name',
+      header: 'Store',
       key: 'name',
       sortable: true,
       render: (val, row) => (
-        <span style={{ fontWeight: 600, color: '#0f172a' }}>{row.name}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '36px',
+              height: '36px',
+              borderRadius: '6px',
+              background: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              color: '#1d4ed8',
+              fontWeight: 700,
+              fontSize: '0.8rem',
+              letterSpacing: '0.02em',
+              flexShrink: 0,
+            }}
+          >
+            {getInitials(row.name)}
+          </span>
+          <span style={{ fontWeight: 700, color: '#111827', fontSize: '0.925rem' }}>{row.name}</span>
+        </div>
       ),
     },
     {
@@ -150,34 +180,36 @@ export const UserStoreListPage = () => {
       key: 'address',
       sortable: true,
       render: (val, row) => (
-        <span style={{ color: '#334155' }}>{row.address}</span>
+        <span style={{ color: '#4b5563', fontSize: '0.875rem' }}>{row.address}</span>
       ),
     },
     {
-      header: 'Overall Rating',
+      header: 'Community rating',
       key: 'overallRating',
       sortable: true,
       render: (val, row) =>
         row.overallRating !== null && row.overallRating !== undefined ? (
-          <span style={{ color: '#d97706', fontWeight: 600 }}>{renderStars(row.overallRating)}</span>
+          <span style={{ color: '#d97706', fontWeight: 700, fontSize: '0.9rem' }}>
+            {renderStars(row.overallRating)}
+          </span>
         ) : (
-          <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>No ratings</span>
+          <span style={{ color: '#9ca3af', fontSize: '0.825rem' }}>No ratings yet</span>
         ),
     },
     {
-      header: 'My Rating',
+      header: 'Your rating',
       key: 'userRating',
       render: (val, row) =>
         row.userRating ? (
-          <span style={{ color: '#059669', fontWeight: 600 }}>
+          <span style={{ color: '#059669', fontWeight: 600, fontSize: '0.875rem' }}>
             {'★'.repeat(row.userRating)} ({row.userRating}/5)
           </span>
         ) : (
-          <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Not rated</span>
+          <span style={{ color: '#9ca3af', fontSize: '0.825rem' }}>Not rated</span>
         ),
     },
     {
-      header: 'Action',
+      header: 'Rate',
       key: 'action',
       render: (val, row) => {
         const currentStoreRating = ratingInputState[row.id] || row.userRating || 0;
@@ -186,14 +218,17 @@ export const UserStoreListPage = () => {
 
         if (!isUserRole) {
           return currentUser ? (
-            <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Only Normal Users can rate</span>
+            <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>Normal Users only</span>
           ) : (
-            <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Log in as Normal User to rate</span>
+            <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>Log in to rate</span>
           );
         }
 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+            <span style={{ fontSize: '0.725rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+              Rate this store
+            </span>
             <RatingInput
               value={currentStoreRating}
               disabled={isSubmitting}
@@ -203,6 +238,7 @@ export const UserStoreListPage = () => {
               <span
                 style={{
                   fontSize: '0.75rem',
+                  fontWeight: 500,
                   color: actionMsg.type === 'error' ? '#dc2626' : '#059669',
                 }}
               >
@@ -218,47 +254,48 @@ export const UserStoreListPage = () => {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1 className="page-title">Stores</h1>
-        <p className="page-description">Browse registered stores and share your rating experience.</p>
+        <span className="eyebrow">Store Directory</span>
+        <h1 className="page-title">Find a store worth talking about.</h1>
+        <p className="page-description">Browse registered local businesses, see community ratings, and share your own experience.</p>
       </div>
 
-      {/* Unified Search Section Panel */}
-      <div className="panel" style={{ marginBottom: '1.5rem', background: '#ffffff', padding: '1rem 1.25rem' }}>
-        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem', alignItems: 'flex-end' }}>
-          <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155' }}>Store Name</label>
+      {/* Unified Horizontal Search Section Panel */}
+      <div className="panel" style={{ marginBottom: '1.75rem', background: '#ffffff', border: '1px solid #e5e7eb', padding: '1.25rem 1.5rem' }}>
+        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'flex-end' }}>
+          <div style={{ flex: '1 1 240px', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#374151' }}>Store Name</label>
             <input
               type="text"
-              placeholder="Search by store name..."
+              placeholder="Filter by store name..."
               value={nameFilter}
               onChange={(e) => setNameFilter(e.target.value)}
               style={{
                 width: '100%',
-                padding: '0.45rem 0.75rem',
-                borderRadius: '4px',
+                padding: '0.5rem 0.85rem',
+                borderRadius: '6px',
                 background: '#ffffff',
-                border: '1px solid #cbd5e1',
-                color: '#0f172a',
+                border: '1px solid #d1d5db',
+                color: '#111827',
                 fontSize: '0.875rem',
                 outline: 'none',
               }}
             />
           </div>
 
-          <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155' }}>Address</label>
+          <div style={{ flex: '1 1 240px', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#374151' }}>Address</label>
             <input
               type="text"
-              placeholder="Search by address..."
+              placeholder="Filter by address..."
               value={addressFilter}
               onChange={(e) => setAddressFilter(e.target.value)}
               style={{
                 width: '100%',
-                padding: '0.45rem 0.75rem',
-                borderRadius: '4px',
+                padding: '0.5rem 0.85rem',
+                borderRadius: '6px',
                 background: '#ffffff',
-                border: '1px solid #cbd5e1',
-                color: '#0f172a',
+                border: '1px solid #d1d5db',
+                color: '#111827',
                 fontSize: '0.875rem',
                 outline: 'none',
               }}
@@ -267,7 +304,7 @@ export const UserStoreListPage = () => {
 
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <Button type="submit" variant="primary" size="md">
-              Search
+              Search Stores
             </Button>
             {(nameFilter || addressFilter || sortBy) && (
               <Button type="button" variant="secondary" size="md" onClick={handleClearSearch}>

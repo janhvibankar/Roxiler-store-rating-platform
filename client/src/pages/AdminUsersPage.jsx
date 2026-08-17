@@ -137,30 +137,31 @@ export const AdminUsersPage = () => {
       key: 'role',
       sortable: true,
       render: (role) => (
-        <span className={`badge ${role === 'ADMIN' ? 'badge-admin' : 'badge-user'}`}>{role}</span>
+        <span className={`badge ${role === 'ADMIN' ? 'badge-admin' : role === 'STORE_OWNER' ? 'badge-owner' : 'badge-user'}`}>{role}</span>
       ),
     },
     {
       header: 'Actions',
       key: 'actions',
       render: (_, row) => (
-        <Link to={`/admin/users/${row.id}`} style={{ fontSize: '0.85rem', color: '#2563eb' }}>
-          View Details
+        <Link to={`/admin/users/${row.id}`} style={{ fontSize: '0.85rem', fontWeight: 600, color: '#2563eb' }}>
+          View Details →
         </Link>
       ),
     },
   ];
 
   return (
-    <div style={{ display: 'flex', flex: 1, minHeight: 'calc(100vh - 65px)' }}>
+    <div style={{ display: 'flex', flex: 1, minHeight: 'calc(100vh - 66px)' }}>
       <Sidebar role="ADMIN" />
       <div className="page-container">
-        <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h1 className="page-title">Manage Users</h1>
-            <p className="page-description">Add new users, filter listings, and sort by column headings</p>
+            <span className="eyebrow">User Directory</span>
+            <h1 className="page-title">Users</h1>
+            <p className="page-description">Manage registered users, store owners, and administrators.</p>
           </div>
-          <Button variant="primary" size="sm" onClick={() => setShowAddForm(!showAddForm)}>
+          <Button variant="primary" size="md" onClick={() => setShowAddForm(!showAddForm)}>
             {showAddForm ? 'Close Form' : '+ Add User'}
           </Button>
         </div>

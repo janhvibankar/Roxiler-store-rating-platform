@@ -81,15 +81,13 @@ export const StoreOwnerDashboardPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flex: 1, minHeight: 'calc(100vh - 65px)' }}>
+    <div style={{ display: 'flex', flex: 1, minHeight: 'calc(100vh - 66px)' }}>
       <Sidebar role="STORE_OWNER" />
       <div className="page-container">
         <div className="page-header">
-          <div style={{ marginBottom: '0.25rem' }}>
-            <span className="badge badge-owner">Role: Store Owner</span>
-          </div>
-          <h1 className="page-title">Store Owner Dashboard</h1>
-          <p className="page-description">Overview of your registered store performance and customer ratings</p>
+          <span className="eyebrow">Store Owner Dashboard</span>
+          <h1 className="page-title">Your stores</h1>
+          <p className="page-description">Overview of your assigned retail stores, average customer ratings, and customer feedback logs.</p>
         </div>
 
         {loadingStores ? (
@@ -97,26 +95,27 @@ export const StoreOwnerDashboardPage = () => {
         ) : error ? (
           <ErrorMessage message={error} />
         ) : stores.length === 0 ? (
-          <div className="panel" style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#0f172a', marginBottom: '0.2rem' }}>No Store Assigned</h3>
-            <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>No store has been assigned to your Store Owner account yet.</p>
+          <div className="panel" style={{ padding: '2.5rem', textAlign: 'center', color: '#6b7280' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: '0.25rem' }}>No Store Assigned</h3>
+            <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>No store has been assigned to your Store Owner account yet.</p>
           </div>
         ) : (
           <>
             {/* Multiple Store Selector if owner has > 1 store */}
             {stores.length > 1 && (
-              <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569' }}>Select Store:</label>
+              <div style={{ marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <label style={{ fontSize: '0.875rem', fontWeight: 700, color: '#374151' }}>Store:</label>
                 <select
                   value={selectedStoreId || ''}
                   onChange={(e) => handleSelectStore(parseInt(e.target.value, 10))}
                   style={{
-                    padding: '0.4rem 0.75rem',
-                    borderRadius: '4px',
+                    padding: '0.5rem 0.85rem',
+                    borderRadius: '6px',
                     background: '#ffffff',
-                    border: '1px solid #cbd5e1',
-                    color: '#0f172a',
+                    border: '1px solid #d1d5db',
+                    color: '#111827',
                     fontSize: '0.875rem',
+                    fontWeight: 600,
                   }}
                 >
                   {stores.map((s) => (
@@ -130,19 +129,19 @@ export const StoreOwnerDashboardPage = () => {
 
             {/* Selected Store Information Summary Panel */}
             {selectedStore && (
-              <div className="panel" style={{ marginBottom: '1.25rem', background: '#ffffff', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+              <div className="panel" style={{ marginBottom: '1.75rem', background: '#ffffff', border: '1px solid #e5e7eb', padding: '1.5rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1.25rem' }}>
                   <div>
-                    <h2 style={{ fontSize: '1.15rem', fontWeight: 600, color: '#0f172a' }}>
-                      Store: {selectedStore.storeName || selectedStore.name}
+                    <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.01em' }}>
+                      {selectedStore.storeName || selectedStore.name}
                     </h2>
-                    <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.2rem' }}>
-                      Address: {selectedStore.address} | Email: {selectedStore.email}
+                    <p style={{ fontSize: '0.875rem', color: '#4b5563', marginTop: '0.25rem' }}>
+                      {selectedStore.address} • Contact: {selectedStore.email}
                     </p>
                   </div>
-                  <div>
-                    <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block' }}>Average Rating:</span>
-                    <span style={{ fontSize: '1.1rem', fontWeight: 700, color: selectedStore.averageRating ? '#d97706' : '#94a3b8' }}>
+                  <div style={{ padding: '0.75rem 1.25rem', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '8px', textAlign: 'right' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block' }}>Average Rating</span>
+                    <span style={{ fontSize: '1.25rem', fontWeight: 800, color: selectedStore.averageRating ? '#d97706' : '#9ca3af' }}>
                       {renderStars(selectedStore.averageRating)}
                     </span>
                   </div>
@@ -150,9 +149,9 @@ export const StoreOwnerDashboardPage = () => {
               </div>
             )}
 
-            {/* Customers Who Rated Table */}
-            <h2 style={{ fontSize: '1rem', fontWeight: 600, color: '#0f172a', marginBottom: '0.65rem' }}>
-              Customers Who Rated This Store
+            {/* Customer Ratings Section */}
+            <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#111827', marginBottom: '0.85rem' }}>
+              Customer ratings
             </h2>
 
             {loadingRatings ? (

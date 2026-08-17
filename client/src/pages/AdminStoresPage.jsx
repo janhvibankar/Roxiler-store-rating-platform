@@ -138,29 +138,30 @@ export const AdminStoresPage = () => {
     { header: 'Email', key: 'email', sortable: true },
     { header: 'Address', key: 'address', sortable: true },
     {
-      header: 'Average Rating',
+      header: 'Average rating',
       key: 'rating',
       sortable: true,
       render: (val) =>
         val !== null && val !== undefined ? (
-          <span style={{ color: '#d97706', fontWeight: 600 }}>★ {val} / 5</span>
+          <span style={{ color: '#d97706', fontWeight: 700, fontSize: '0.9rem' }}>★ {val} / 5</span>
         ) : (
-          <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>No ratings</span>
+          <span style={{ color: '#9ca3af', fontSize: '0.825rem' }}>No ratings yet</span>
         ),
     },
     { header: 'Owner ID', key: 'owner_id' },
   ];
 
   return (
-    <div style={{ display: 'flex', flex: 1, minHeight: 'calc(100vh - 65px)' }}>
+    <div style={{ display: 'flex', flex: 1, minHeight: 'calc(100vh - 66px)' }}>
       <Sidebar role="ADMIN" />
       <div className="page-container">
-        <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h1 className="page-title">Manage Stores</h1>
-            <p className="page-description">Add stores, assign store owners, filter listings, and sort by column headings</p>
+            <span className="eyebrow">Store Management</span>
+            <h1 className="page-title">Stores</h1>
+            <p className="page-description">Add new retail stores, assign verified store owners, and monitor store ratings.</p>
           </div>
-          <Button variant="primary" size="sm" onClick={() => setShowAddForm(!showAddForm)}>
+          <Button variant="primary" size="md" onClick={() => setShowAddForm(!showAddForm)}>
             {showAddForm ? 'Close Form' : '+ Add Store'}
           </Button>
         </div>

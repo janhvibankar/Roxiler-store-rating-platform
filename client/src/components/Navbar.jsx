@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import tokenStorage from '../utils/tokenStorage';
 import authService from '../services/authService';
 import Input from './Input';
@@ -8,6 +8,7 @@ import ErrorMessage from './ErrorMessage';
 
 export const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const currentUser = tokenStorage.getUser();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
@@ -39,55 +40,77 @@ export const Navbar = () => {
     }
   };
 
+  const isActive = (path) => location.pathname === path;
+
+  const linkStyle = (path) => ({
+    color: isActive(path) ? '#2563eb' : '#4b5563',
+    fontWeight: isActive(path) ? 600 : 500,
+    fontSize: '0.875rem',
+    padding: '0.35rem 0.6rem',
+    borderRadius: '4px',
+    background: isActive(path) ? '#eff6ff' : 'transparent',
+    transition: 'all 0.15s ease',
+  });
+
   return (
     <>
       <nav
         style={{
           background: '#ffffff',
-          borderBottom: '1px solid #e2e8f0',
-          padding: '0.65rem 1.5rem',
+          borderBottom: '1px solid #e5e7eb',
+          padding: '0 2rem',
+          height: '66px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           position: 'sticky',
           top: 0,
           zIndex: 100,
+          boxShadow: '0 1px 2px 0 rgba(17, 24, 39, 0.03)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <Link to="/" style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0f172a', textDecoration: 'none' }}>
-            RateStore
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', textDecoration: 'none' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', borderRadius: '6px', background: '#2563eb', color: '#ffffff', fontWeight: 800, fontSize: '0.85rem' }}>
+              RS
+            </span>
+            <span style={{ fontWeight: 800, fontSize: '1.15rem', color: '#111827', letterSpacing: '-0.02em' }}>
+              RateStore
+            </span>
           </Link>
-          {(!currentUser || currentUser.role === 'USER') && (
-            <Link to="/stores" style={{ color: '#475569', fontSize: '0.875rem', fontWeight: 500 }}>
-              Stores
-            </Link>
-          )}
-          {currentUser && currentUser.role === 'ADMIN' && (
-            <>
-              <Link to="/admin/dashboard" style={{ color: '#475569', fontSize: '0.875rem', fontWeight: 500 }}>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {(!currentUser || currentUser.role === 'USER') && (
+              <Link to="/stores" style={linkStyle('/stores')}>
+                Stores Directory
+              </Link>
+            )}
+            {currentUser && currentUser.role === 'ADMIN' && (
+              <>
+                <Link to="/admin/dashboard" style={linkStyle('/admin/dashboard')}>
+                  Dashboard
+                </Link>
+                <Link to="/admin/users" style={linkStyle('/admin/users')}>
+                  Users
+                </Link>
+                <Link to="/admin/stores" style={linkStyle('/admin/stores')}>
+                  Stores
+                </Link>
+              </>
+            )}
+            {currentUser && currentUser.role === 'STORE_OWNER' && (
+              <Link to="/owner/dashboard" style={linkStyle('/owner/dashboard')}>
                 Dashboard
               </Link>
-              <Link to="/admin/users" style={{ color: '#475569', fontSize: '0.875rem', fontWeight: 500 }}>
-                Users
-              </Link>
-              <Link to="/admin/stores" style={{ color: '#475569', fontSize: '0.875rem', fontWeight: 500 }}>
-                Stores
-              </Link>
-            </>
-          )}
-          {currentUser && currentUser.role === 'STORE_OWNER' && (
-            <Link to="/owner/dashboard" style={{ color: '#475569', fontSize: '0.875rem', fontWeight: 500 }}>
-              Dashboard
-            </Link>
-          )}
+            )}
+          </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           {currentUser ? (
             <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}>
-                <span style={{ fontWeight: 600, color: '#0f172a' }}>{currentUser.name}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
+                <span style={{ fontWeight: 600, color: '#111827' }}>{currentUser.name}</span>
                 <span className={`badge ${currentUser.role === 'ADMIN' ? 'badge-admin' : currentUser.role === 'STORE_OWNER' ? 'badge-owner' : 'badge-user'}`}>
                   {currentUser.role}
                 </span>
@@ -103,7 +126,7 @@ export const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/login" style={{ color: '#475569', fontSize: '0.875rem', fontWeight: 500 }}>
+              <Link to="/login" style={{ color: '#4b5563', fontSize: '0.875rem', fontWeight: 500, padding: '0.35rem 0.75rem' }}>
                 Login
               </Link>
               <Link
@@ -111,10 +134,10 @@ export const Navbar = () => {
                 style={{
                   background: '#2563eb',
                   color: '#ffffff',
-                  padding: '0.35rem 0.8rem',
-                  borderRadius: '4px',
+                  padding: '0.45rem 0.9rem',
+                  borderRadius: '6px',
                   fontSize: '0.875rem',
-                  fontWeight: 500,
+                  fontWeight: 600,
                   textDecoration: 'none',
                 }}
               >
